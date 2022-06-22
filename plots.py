@@ -215,6 +215,23 @@ def plot_dist_count(a):
     return fig, mean
 
 
+def plot_timestampts(df):
+    df['BLOCK_TIMESTAMP'] = pd.to_datetime(df['BLOCK_TIMESTAMP'])
+    df['MINT_TIMESTAMP'] = pd.to_datetime(df['MINT_TIMESTAMP'])
+
+    fig = px.scatter(df, x="MINT_TIMESTAMP", y="BLOCK_TIMESTAMP", color="PRICE",
+                     color_discrete_sequence=px.colors.qualitative.G10,
+                     template='simple_white',title='MINT vs SECONDARY SELL',
+                hover_data=['TOKENID','BLOCK_TIMESTAMP','MINT_TIMESTAMP','PRICE','BUYER_ADDRESS','SELLER_ADDRESS'],
+                width=700, height=600)
+    fig.update_layout(legend=dict(
+    yanchor="top",
+    y=-0.5,
+    xanchor="left",
+    x=0.01
+))
+    return fig
+
 def plot_scatter(df):
     i = df['USER_ADDRESS'].unique()[0]
     df['BALANCE_DATE'] = pd.to_datetime(df['BALANCE_DATE'])
@@ -230,6 +247,61 @@ def plot_scatter(df):
     x=0.01
 ))
     return fig
+
+def plot_dist_lil(a):
+    #mean = a['mean'].mean()
+    #first_idx = a.columns[0]
+    #string = f'<br><b>{first_idx}</b>: '
+    fig = make_subplots(rows=1, cols=1,specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Bar(y=a['Events'].tolist(), 
+                   x=a.index.tolist(),
+                   hovertemplate =
+                    '%{x}<br>'+
+                    '<i>Number of Sales</i>: %{y}<br>'+
+                    '%{text}',
+                   text = [f'<br><b>Average Price</b>: {i:.2f} ETH' for i in a['Mean_Price_ETH'].tolist()],
+                   
+                   showlegend = False),
+        secondary_y=False,
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(
+                   x=a.index.tolist(), 
+                   y=a['Mean_Price_ETH'].tolist(),
+                   name='Mean Price',
+                   
+                   showlegend = False
+                   ),
+        secondary_y=True,
+        row=1, col=1
+    )
+    fig.update_layout(height=400, width=400, title_text=a.index.name)
+    fig['layout']['xaxis']['title']=f'{a.index.name}'
+    fig.update_yaxes(title_text="Number of Sales", secondary_y=False)
+    fig.update_yaxes(title_text="Average Price", secondary_y=True)
+    return fig
+
+
+def plot_prices(df):
+    df['BLOCK_TIMESTAMP'] = pd.to_datetime(df['BLOCK_TIMESTAMP'])
+    df['MINT_TIMESTAMP'] = pd.to_datetime(df['MINT_TIMESTAMP'])
+
+    fig = px.scatter(df, x="MINT_PRICE", y="PRICE", color="PRICE_DIFF",
+                     color_discrete_sequence=px.colors.qualitative.G10,
+                     template='simple_white',title='MINT vs SECONDARY SELL',
+                hover_data=['TOKENID','BLOCK_TIMESTAMP','MINT_TIMESTAMP','PRICE_DIFF','PRICE','MINT_PRICE','BUYER_ADDRESS','SELLER_ADDRESS'],
+                width=700, height=600)
+    fig.update_layout(legend=dict(
+    yanchor="top",
+    y=-0.5,
+    xanchor="left",
+    x=0.01
+))
+    return fig
+
 
 def eth_plot(df):
     fig,ax = plt.subplots()

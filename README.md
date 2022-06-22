@@ -1,3 +1,3 @@
-# Lost Anchor Funds
+# lilnouns_DAO for Flipside
 
-Forever
+This is Streamlit app
